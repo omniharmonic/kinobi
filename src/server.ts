@@ -2,7 +2,7 @@ import { Database } from "bun:sqlite";
 import { join } from "path";
 
 const isDev = process.env.NODE_ENV !== "production";
-const dbPath = process.env.DB_PATH || (isDev ? "shitty.db" : "/app/data/shitty.db");
+const dbPath = process.env.DB_PATH || (isDev ? "kinobi.db" : "/app/data/kinobi.db");
 
 // Initialize database with error handling
 let db: Database;
@@ -380,6 +380,28 @@ const server = Bun.serve({
       else if (apiResource === "chores") {
         let instanceData = await getInstanceData(syncId);
         console.log(`[DEBUG] [API] /api/${syncId}/chores - method: ${req.method}, itemId: ${itemId}`);
+        
+        // Handle chore reordering
+        if (req.method === "PUT" && itemId === "reorder") {
+          const { chores: newChoreOrder } = await req.json();
+          console.log('[DEBUG] Reorder chores payload:', newChoreOrder);
+          
+          if (!Array.isArray(newChoreOrder)) {
+            return createErrorResponse("Invalid chores array for reordering");
+          }
+          
+          // Validate that all chores still exist and have required fields
+          const validatedChores = newChoreOrder.map(migrateChore);
+          instanceData.chores = validatedChores;
+          
+          await updateInstanceData(syncId, instanceData);
+          console.log('[DEBUG] Chores reordered successfully');
+          
+          return new Response(JSON.stringify(instanceData.chores), {
+            headers: JSON_HEADERS,
+          });
+        }
+        
         if (req.method === "GET" && !itemId) {
           console.log('[DEBUG] Returning chores:', instanceData.chores);
           return new Response(JSON.stringify(instanceData.chores), {
@@ -662,37 +684,45 @@ const server = Bun.serve({
     }
 
     @layer utilities {
-      .shit-float {
-        animation: floatingShit 3s ease-in-out infinite;
+      /* Subtle logo animation for header */
+      .kinobi-logo-float {
+        animation: logoFloat 4s ease-in-out infinite;
       }
       
-      .shit-float-1 {
-        animation: floatingShit 2.8s ease-in-out infinite 0s;
+      /* More subtle chore animations */
+      .chore-float-1 {
+        animation: choreFloat 4.5s ease-in-out infinite 0s;
       }
       
-      .shit-float-2 {
-        animation: floatingShit 3.2s ease-in-out infinite 0.3s;
+      .chore-float-2 {
+        animation: choreFloat 5s ease-in-out infinite 0.4s;
       }
       
-      .shit-float-3 {
-        animation: floatingShit 2.9s ease-in-out infinite 0.6s;
+      .chore-float-3 {
+        animation: choreFloat 4.8s ease-in-out infinite 0.8s;
       }
       
-      .shit-float-4 {
-        animation: floatingShit 3.1s ease-in-out infinite 0.9s;
+      .chore-float-4 {
+        animation: choreFloat 5.2s ease-in-out infinite 1.2s;
       }
       
-      .shit-float-5 {
-        animation: floatingShit 2.7s ease-in-out infinite 1.2s;
+      .chore-float-5 {
+        animation: choreFloat 4.6s ease-in-out infinite 1.6s;
       }
       
-      .shit-float-6 {
-        animation: floatingShit 3.3s ease-in-out infinite 1.5s;
+      .chore-float-6 {
+        animation: choreFloat 5.4s ease-in-out infinite 2s;
       }
       
-      @keyframes floatingShit {
+      @keyframes logoFloat {
         0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
+        50% { transform: translateY(-3px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      @keyframes choreFloat {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
         100% { transform: translateY(0px); }
       }
       

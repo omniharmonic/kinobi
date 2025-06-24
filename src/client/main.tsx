@@ -203,7 +203,7 @@ function App() {
       <div className="flex flex-col h-screen bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100">
         <header className="bg-[#FAF9F6] p-4 shadow-md flex-shrink-0 flex items-center justify-between text-[#222]">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}> 
-            <img src="/kinobi_alpha.gif" alt="Kinobi" className="w-12 h-12 shit-float-1" />
+            <img src="/kinobi_alpha.gif" alt="Kinobi" className="w-12 h-12 kinobi-logo-float" />
             <span className="text-4xl font-bold tracking-tight select-none">Kinobi</span>
           </div>
           <nav className="flex gap-6 text-lg items-center">
@@ -297,14 +297,14 @@ function ShitView() {
     );
   }
 
-  // Use full screen width, distribute chores evenly
+  // Use responsive grid with maximum 4 chores per row
   return (
-    <div className="h-full w-full p-8 flex items-center justify-center">
-      <div className="w-full max-w-none grid gap-8 place-items-center" style={{
-        gridTemplateColumns: `repeat(${Math.min(chores.length, 6)}, 1fr)`,
+    <div className="h-full w-full pt-[32rem] pb-8 px-8 flex items-center justify-center">
+      <div className="w-full max-w-7xl grid gap-8 place-items-center" style={{
+        gridTemplateColumns: `repeat(${Math.min(chores.length, 4)}, 1fr)`,
         gridAutoRows: 'min-content'
       }}>
-        {chores.slice(0, 6).map((chore, index) => (
+        {chores.map((chore, index) => (
           <ShitPile key={chore.id} chore={chore} config={config} onTended={fetchChoresInternal} animationIndex={index} />
         ))}
       </div>
@@ -451,8 +451,8 @@ function ShitPile({ chore, config, onTended, animationIndex = 0 }: { chore: Chor
   }
 
   function getAnimationClass() {
-    // Cycle through the available animation classes
-    const animationClasses = ['shit-float-1', 'shit-float-2', 'shit-float-3', 'shit-float-4', 'shit-float-5', 'shit-float-6'];
+    // Cycle through the available animation classes - using more subtle chore animations
+    const animationClasses = ['chore-float-1', 'chore-float-2', 'chore-float-3', 'chore-float-4', 'chore-float-5', 'chore-float-6'];
     return animationClasses[animationIndex % animationClasses.length];
   }
 
@@ -1270,6 +1270,7 @@ function ManageChoresComponent() {
   const [newCycleDuration, setNewCycleDuration] = useState<number>(24);
   const [newPoints, setNewPoints] = useState<number>(10);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   async function fetchChoresInternal() {
     if (!syncId) return;
@@ -1424,6 +1425,62 @@ function ManageChoresComponent() {
     }
   }
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = async (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    setIsProcessing(true);
+    
+    try {
+      // Create a new array with reordered chores
+      const newChores = [...chores];
+      const draggedChore = newChores[draggedIndex];
+      
+      // Remove the dragged item
+      newChores.splice(draggedIndex, 1);
+      
+      // Insert it at the new position
+      newChores.splice(dropIndex, 0, draggedChore);
+      
+      // Update the local state immediately for responsive UI
+      setChores(newChores);
+      
+      // Send all chores in new order to the server
+      await fetch(`/api/${syncId}/chores/reorder`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chores: newChores }),
+      });
+      
+    } catch (error) {
+      console.error("Error reordering chores:", error);
+      // Revert on error
+      fetchChoresInternal();
+    } finally {
+      setIsProcessing(false);
+      setDraggedIndex(null);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   if (isLoading) {
     return (
       <div className="text-2xl mt-6 text-amber-700">
@@ -1442,13 +1499,29 @@ function ManageChoresComponent() {
         {chores.length === 0 && !isLoading
           ? <p className="text-amber-600">No chores added yet.</p>
           : null}
+        <div className="mb-4 text-sm text-amber-600 bg-amber-50 p-2 rounded border">
+          💡 <strong>Tip:</strong> Drag and drop chores to reorder them. The order here determines how they appear on the main page.
+        </div>
         <ul className="space-y-2">
-          {chores.map((chore: any) => (
+          {chores.map((chore: any, index: number) => (
             <li
               key={chore.id}
-              className="flex items-center justify-between p-3 bg-amber-50 rounded border border-amber-200"
+              draggable={!isProcessing}
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, index)}
+              onDragEnd={handleDragEnd}
+              className={`flex items-center justify-between p-3 bg-amber-50 rounded border border-amber-200 transition-all duration-200 ${
+                draggedIndex === index 
+                  ? "opacity-50 scale-95 border-amber-400 shadow-lg" 
+                  : "hover:shadow-md hover:border-amber-300 cursor-move"
+              } ${isProcessing ? "pointer-events-none opacity-60" : ""}`}
             >
               <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center text-amber-400">
+                  <span className="text-xs leading-none">⋮⋮</span>
+                  <span className="text-xs leading-none">⋮⋮</span>
+                </div>
                 <span className="text-2xl">{chore.icon}</span>
                 <div className="flex flex-col">
                   <span className="text-amber-800 font-medium">{chore.name}</span>
@@ -1967,12 +2040,18 @@ function ProgressRing({ progress, status, size, strokeWidth = 4, children }: Pro
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress * circumference);
   
-  const color = CountdownService.getStatusColor(status);
+  const statusColor = CountdownService.getStatusColor(status);
   
-  // Background circle color (light version)
-  const bgColor = status === 'good' ? '#dcfce7' : 
-                  status === 'warning' ? '#fef3c7' :
-                  status === 'urgent' ? '#fed7aa' : '#fecaca';
+  // Filled circle background based on status
+  const fillColor = status === 'good' ? '#dcfce7' : 
+                    status === 'warning' ? '#fef3c7' :
+                    status === 'urgent' ? '#fed7aa' : '#fecaca';
+  
+  // Light gray background for the progress ring
+  const ringBgColor = '#e5e7eb';
+  
+  // Inner circle radius (slightly smaller to leave room for the ring)
+  const innerRadius = radius - strokeWidth - 2;
   
   // Add pulse animation for urgent and overdue states
   const ringClasses = `transform -rotate-90 ${
@@ -1988,21 +2067,35 @@ function ProgressRing({ progress, status, size, strokeWidth = 4, children }: Pro
         className={ringClasses}
         style={{ position: 'absolute', top: 0, left: 0 }}
       >
-        {/* Background circle */}
+        {/* Filled status circle in the center */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={innerRadius}
+          fill={fillColor}
+          stroke={statusColor}
+          strokeWidth={2}
+          style={{ 
+            transition: 'fill 0.3s ease-in-out, stroke 0.3s ease-in-out'
+          }}
+        />
+        
+        {/* Background ring for progress */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={bgColor}
+          stroke={ringBgColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress circle */}
+        
+        {/* Progress ring */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={color}
+          stroke={statusColor}
           strokeWidth={strokeWidth}
           fill="none"
           strokeLinecap="round"
@@ -2019,7 +2112,7 @@ function ProgressRing({ progress, status, size, strokeWidth = 4, children }: Pro
             cx={size / 2}
             cy={size / 2}
             r={radius + 2}
-            stroke={color}
+            stroke={statusColor}
             strokeWidth={1}
             fill="none"
             opacity="0.3"
@@ -2031,9 +2124,9 @@ function ProgressRing({ progress, status, size, strokeWidth = 4, children }: Pro
       <div 
         className="absolute inset-0 flex items-center justify-center"
         style={{ 
-          width: size - strokeWidth * 2, 
-          height: size - strokeWidth * 2,
-          margin: strokeWidth
+          width: size - strokeWidth * 4, 
+          height: size - strokeWidth * 4,
+          margin: strokeWidth * 2
         }}
       >
         {children}
