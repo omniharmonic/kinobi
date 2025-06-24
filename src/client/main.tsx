@@ -203,7 +203,7 @@ function App() {
       <div className="flex flex-col h-screen bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-100">
         <header className="bg-[#FAF9F6] p-4 shadow-md flex-shrink-0 flex items-center justify-between text-[#222]">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}> 
-            <img src="/kinobi_alpha.gif" alt="Kinobi" className="w-12 h-12 kinobi-logo-float" />
+            <img src="/kinobi_alpha.gif" alt="Kinobi" className="w-16 h-16 kinobi-logo-float" />
             <span className="text-4xl font-bold tracking-tight select-none">Kinobi</span>
           </div>
           <nav className="flex gap-6 text-lg items-center">
