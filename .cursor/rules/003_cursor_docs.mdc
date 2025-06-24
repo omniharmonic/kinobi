@@ -1,0 +1,23 @@
+---
+description: Organization of development documentation as part of the workspace scaffolding.
+globs: .cursor/docs/**/*
+---
+## Documentation Framework
+
+1. Purpose
+   - Support development process
+   - Document patterns and decisions
+   - Guide without constraining
+   - Enable knowledge sharing
+
+2. Organization
+   - /ref/: External references and standards
+   - /temp/: Work in progress documentation
+   - /arch/: Architecture and design docs
+   - Project docs live outside .cursor/
+
+3. Best Practices
+   - Keep scaffolding docs in .cursor/docs
+   - Project documentation in project space
+   - Clear cross-references
+   - Regular maintenance

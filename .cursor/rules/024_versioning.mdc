@@ -1,0 +1,14 @@
+---
+description: Version control and release management standards.
+globs: package.json, .cursor/docs/releases/**/*
+---
+## Standards
+1. Version Control
+- Git workflow
+- Branch naming
+- Commit messages
+
+2. Releases
+- Semantic versioning
+- Release notes
+- Change tracking

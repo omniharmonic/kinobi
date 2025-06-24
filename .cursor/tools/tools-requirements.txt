@@ -1,0 +1,32 @@
+# Dependencies for tools in .cursor/tools/
+# Install with: pip install -r .cursor/tools/tools-requirements.txt
+# These dependencies are separate from the main project requirements
+# to keep the core project dependencies minimal.
+
+# Web scraping and research tools
+pipet==0.0.2  # Latest available version
+crawl4ai>=0.6.2  # AI-friendly web crawler & scraper
+playwright>=1.34.0  # For JavaScript mode in Pipet
+beautifulsoup4>=4.11.0  # HTML parsing
+requests>=2.28.0  # HTTP requests
+
+# Search engine API clients
+googlesearch-python>=1.1.0  # Google search API
+duckduckgo-search>=2.8.0  # DuckDuckGo search API
+
+# Data processing
+pandas>=1.5.0  # Data manipulation
+numpy>=1.23.0  # Numerical operations
+pyyaml>=6.0  # YAML parsing for configuration
+
+# Automation and scheduling
+apscheduler>=3.9.0  # For scheduled tasks like interval checks
+
+# Output formatting
+tabulate>=0.9.0  # Pretty table output
+rich>=12.5.0  # Rich text and formatting in terminal
+
+# Optional: For extended functionality
+# python-dotenv>=0.21.0  # Environment variable management for API keys
+# selenium>=4.7.0  # Alternative to Playwright for browser automation
+# feedparser>=6.0.10  # For RSS feed parsing if needed 

@@ -1,0 +1,23 @@
+---
+description: Development tool management and configuration as part of workspace scaffolding.
+globs: .cursor/tools/**/*
+---
+## Tool Framework
+
+1. Purpose
+   - Support development workflow
+   - Provide utility scripts
+   - Configure development tools
+   - Enable project tooling
+
+2. Organization
+   - Scripts: Development automation
+   - Config: Tool configurations
+   - Templates: Reusable patterns
+   - Project tools live outside .cursor/
+
+3. Best Practices
+   - Keep tool config in .cursor/
+   - Project scripts in project space
+   - Document tool usage
+   - Maintain independence

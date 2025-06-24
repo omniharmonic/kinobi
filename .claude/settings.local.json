@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.val.town)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(bun install:*)",
+      "Bash(bun run:*)",
+      "Bash(bun test:*)",
+      "Bash(bun add:*)",
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(rg:*)",
+      "Bash(sed:*)",
+      "Bash(bunx tsc:*)",
+      "Bash(bun build:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": []
+  }
+}
