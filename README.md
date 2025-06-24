@@ -1,95 +1,218 @@
-# Kinobi - Smart Chore Tracker
+# Kinobi 🎯
 
-A sophisticated, self-hosted chore tracking app with time cycles, point scoring, and leaderboards for your household, built with Bun, React, and SQLite.
+A sophisticated chore tracking application with time-cycle awareness, visual countdown indicators, and competitive scoring. Transform your household chores into an engaging, gamified experience.
 
-## Quick Start
+![Kinobi Logo](kinobi_alpha.gif)
 
-1. **Install Bun** (if not already installed):
-   ```bash
-   curl -fsSL https://bun.sh/install | bash
-   ```
+## Features ✨
 
-2. **Install dependencies**:
-   ```bash
-   bun install
-   ```
+### 🔄 Time Cycle Management
+- **Configurable Cycles**: Set custom cycle durations for each chore (1-8760 hours)
+- **Automatic Due Dates**: Smart calculation of when chores need attention
+- **Real-time Countdowns**: Live updates showing time remaining until due
 
-3. **Development mode**:
-   ```bash
-   bun run dev
-   ```
-   Visit `http://localhost:3000`
+### 🎨 Visual Countdown System
+- **Filled Status Circles**: Immediate visual status indication with color-coded backgrounds
+- **Progress Rings**: Outer rings showing precise countdown progression
+- **Status Colors**: Green (good) → Yellow (warning) → Orange (urgent) → Red (overdue)
+- **Smooth Animations**: Pulse effects for urgent/overdue chores with gentle floating animations
 
-4. **Production mode**:
-   ```bash
-   bun run build
-   bun run start
-   ```
+### 🏆 Scoring & Leaderboards
+- **Point System**: Configurable points per chore completion
+- **Real-time Rankings**: Live leaderboard with filtering and sorting
+- **Performance Tracking**: Completion counts, averages, and recent activity
+- **Visual Indicators**: Medals and badges for top performers
 
-## Features
+### 📱 Modern PWA Experience
+- **Progressive Web App**: Install on any device, works offline
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Real-time Sync**: Multiple devices, single shared instance
+- **Background Optimization**: Efficient updates when app is inactive
 
-- ✅ Track household chores with custom icons
-- ✅ Configurable time cycles for each chore
-- ✅ Visual countdown indicators with color transitions
-- ✅ Point scoring system for completed chores
-- ✅ Leaderboard rankings for all household members
-- ✅ Multiple tenders support
-- ✅ Tending history with notes
-- ✅ Sync across devices with sync codes
-- ✅ PWA support (works offline)
-- ✅ SQLite database (local file)
-- ✅ Responsive design with Tailwind CSS
-
-## Architecture
+## Technology Stack 🛠️
 
 - **Frontend**: React + TypeScript + Tailwind CSS
-- **Backend**: Bun server with native SQLite
-- **Database**: SQLite (single `shitty.db` file)
-- **Build**: Bun's built-in bundler
+- **Backend**: Bun runtime with built-in SQLite
+- **Architecture**: Single-file deployment, self-contained
+- **Deployment**: Ready for val.town, Vercel, or any Node.js host
 
-## Project Structure
+## Getting Started 🚀
 
+### Prerequisites
+- [Bun](https://bun.sh/) runtime installed
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/omniharmonic/kinobi.git
+cd kinobi
+
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
 ```
-src/
-├── server.ts          # Bun server with API routes
-├── client/
-│   └── main.tsx       # React frontend
-├── db/
-│   └── migrate.ts     # Database migrations (optional)
-└── ...
+
+The application will be available at `http://localhost:3000`
+
+### Production Build
+```bash
+# Build for production
+bun run build
+
+# Start production server
+bun run start
 ```
 
-## API Endpoints
+## Configuration ⚙️
 
-- `GET /api/:syncId/chores` - Get all chores
-- `POST /api/:syncId/chores` - Add new chore
+### Chore Settings
+- **Cycle Duration**: 1-8760 hours between completions
+- **Points**: 1-1000 points awarded per completion
+- **Icons**: Any emoji or Unicode character
+- **Ordering**: Drag-and-drop reordering in settings
+
+### Global Configuration
+- **Default Cycle**: 24 hours (customizable)
+- **Default Points**: 10 points (customizable)
+- **Warning Threshold**: 75% (when to show yellow)
+- **Urgent Threshold**: 90% (when to show red)
+
+## Usage Guide 📖
+
+### Adding Chores
+1. Go to **Settings** → **Manage Chores**
+2. Enter chore name, icon, cycle duration, and points
+3. Click **Add Chore**
+
+### Completing Chores
+1. Click on any chore icon on the main dashboard
+2. Select who completed the chore
+3. Add optional notes
+4. Click **Log Tending**
+
+### Viewing Progress
+- **Main Dashboard**: Visual countdown rings show status at a glance
+- **History**: Complete log of all chore completions
+- **Leaderboard**: Rankings with filtering and sorting options
+
+### Sync Between Devices
+1. Go to **Settings** → **Sync Settings**
+2. Copy your sync code
+3. Enter the same code on other devices
+4. All devices will share the same chore data
+
+## Visual Design System 🎨
+
+### Status Indicators
+- **🟢 Green Circle**: Chore is on track (0-75% of cycle elapsed)
+- **🟡 Yellow Circle**: Warning zone (75-90% of cycle elapsed)
+- **🟠 Orange Circle**: Urgent attention needed (90-100% of cycle elapsed)
+- **🔴 Red Circle**: Overdue (past due date)
+
+### Progress Rings
+- **Outer Ring**: Shows countdown progression (fills as due date approaches)
+- **Inner Circle**: Shows current status with appropriate color
+- **Animations**: Pulse effects for urgent/overdue states
+
+### Responsive Layout
+- **Grid System**: Automatic layout adjustment based on number of chores
+- **Maximum 4 per row**: Optimal viewing on all screen sizes
+- **Touch-friendly**: Large tap targets for mobile devices
+
+## API Endpoints 🔌
+
+### Chores
+- `GET /api/:syncId/chores` - List all chores
+- `POST /api/:syncId/chores` - Create new chore
 - `PUT /api/:syncId/chores/:id` - Update chore
 - `DELETE /api/:syncId/chores/:id` - Delete chore
-- `GET /api/:syncId/tenders` - Get all tenders
-- `POST /api/:syncId/tenders` - Add tender
-- `GET /api/:syncId/history` - Get tending history
-- `POST /api/:syncId/tend` - Log a tending action
+- `PUT /api/:syncId/chores/reorder` - Reorder chores
 
-## Sync System
+### Completions
+- `POST /api/:syncId/tend` - Log chore completion
+- `GET /api/:syncId/history` - Get completion history
+- `DELETE /api/:syncId/history/:id` - Delete history entry
 
-Each installation has a unique sync ID stored in localStorage. Share your sync code with other devices to sync the same data.
+### Scoring
+- `GET /api/:syncId/leaderboard` - Get current rankings
 
-## Database
+### Configuration
+- `GET /api/:syncId/config` - Get configuration
+- `PUT /api/:syncId/config` - Update configuration
 
-SQLite database (`kinobi.db`) is created automatically. Each sync ID gets its own row in the `kinobi_instances` table.
+## Database Schema 💾
 
-## Development vs Production
+### Chore Object
+```typescript
+interface Chore {
+  id: string;                 // Unique identifier
+  name: string;               // Display name
+  icon: string;               // Emoji or Unicode icon
+  cycleDuration: number;      // Hours between completions
+  points: number;             // Points awarded for completion
+  lastCompleted?: number;     // Timestamp of last completion
+  dueDate?: number;          // Calculated due date timestamp
+}
+```
 
-- **Dev**: Uses `bun --watch` with direct TypeScript execution
-- **Prod**: Builds React app to `dist/` and serves static files
+### Configuration Object
+```typescript
+interface ChoreConfig {
+  defaultCycleDuration: number;  // Default 24 hours
+  defaultPoints: number;         // Default 10 points
+  warningThreshold: number;      // Warning at 75%
+  urgentThreshold: number;       // Urgent at 90%
+}
+```
 
-## Deployment
+## Deployment 🚀
 
-For self-hosting on your Mac:
+### val.town Deployment
+```javascript
+// Simply upload the built bundle to val.town
+// The application is self-contained with embedded SQLite
+```
 
-1. Build the app: `bun run build`
-2. Start production server: `bun run start`
-3. Access via local network IP for other devices
+### Docker Deployment
+```dockerfile
+FROM oven/bun:1
 
+WORKDIR /app
+COPY . .
+RUN bun install
+RUN bun run build
 
-The app works great as a kitchen tablet display or shared household dashboard!
+EXPOSE 3000
+CMD ["bun", "run", "start"]
+```
+
+### Environment Variables
+- `NODE_ENV`: Set to "production" for production builds
+- `PORT`: Server port (default: 3000)
+- `HOST`: Server host (default: 0.0.0.0)
+- `DB_PATH`: SQLite database file path
+
+## Contributing 🤝
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments 🙏
+
+- Built with ❤️ at The Life House
+- Powered by [Bun](https://bun.sh/) runtime
+- UI components with [Tailwind CSS](https://tailwindcss.com/)
+- Icons from the amazing emoji community
+
+---
+
+**Kinobi** - Transform your chores into an engaging, competitive experience! 🎯✨
